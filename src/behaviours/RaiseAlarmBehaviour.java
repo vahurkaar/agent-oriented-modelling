@@ -48,7 +48,7 @@ public class RaiseAlarmBehaviour extends OneShotBehaviour {
             //Set the FIPA-SL content language
             cfp.setLanguage(myAgent.getContentManager().getLanguageNames()[0]);
             //Set the ontology which provides knowledge sharing
-            cfp.setOntology(myAgent.getContentManager().getOntologyNames()[0]);
+            cfp.setOntology("raise-alarm");
             cfp.addReceiver(result[0].getName());
             cfp.setReplyWith("cfp"+System.currentTimeMillis());  //Unique value
 

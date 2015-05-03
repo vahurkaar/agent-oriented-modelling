@@ -13,6 +13,7 @@ import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import ontology.AlarmActivity;
 import ontology.Incident;
+import ontology.Location;
 
 /**
  * Created by Vahur Kaar on 2.05.2015.
@@ -56,7 +57,7 @@ public class SecurityAssistantMessageReceiver extends TickerBehaviour {
 
                     myAgent.addBehaviour(new CallSecurityProviderBehaviour(myAgent));
                     myAgent.addBehaviour(new OrderToExitBehaviour(myAgent));
-//                    myAgent.addBehaviour(new RecommendSafeAreaBehaviour(myAgent));
+                    myAgent.addBehaviour(new RecommendSafeAreaBehaviour(myAgent));
                 } else {
                     System.out.println(myAgent.getLocalName() + ": ALARM HAS ALREADY BEEN RAISED!");
                 }
@@ -70,7 +71,7 @@ public class SecurityAssistantMessageReceiver extends TickerBehaviour {
                 //Set the FIPA-SL content language
                 reply.setLanguage(myAgent.getContentManager().getLanguageNames()[0]);
                 //Set the ontology which provides knowledge sharing
-                reply.setOntology(myAgent.getContentManager().getOntologyNames()[0]);
+                reply.setOntology(myAgent.getContentManager().getOntologyNames()[1]);
                 try {
                     myAgent.getContentManager().fillContent(reply, incident);
                 } catch (Codec.CodecException e) {
@@ -108,10 +109,40 @@ public class SecurityAssistantMessageReceiver extends TickerBehaviour {
             else if (messageOntologyEquals(msg, "send-location")) {
                 System.out.println(myAgent.getLocalName() + ": RECOMMEND SAFE AREA LOCATION");
 
+                ContentElement ce = null;
+                try {
+                    ce = myAgent.getContentManager().extractContent(msg);
+                } catch (Codec.CodecException e) {
+                    e.printStackTrace();
+                } catch (OntologyException e) {
+                    e.printStackTrace();
+                }
+
+                Location location = (Location) ce;
+                Location safeArea;
+                if (location.getLevel().equals("II") && location.getRoom().equals("100")) {
+                    safeArea = new Location("III", "Attic");
+                } else {
+                    safeArea = new Location("0", "Basement");
+                }
+
                 ACLMessage reply = new ACLMessage(ACLMessage.PROPOSE);
                 reply.addReceiver(new AID(msg.getSender().getName(), true));
+                //Set the FIPA-SL content language
+                reply.setLanguage(myAgent.getContentManager().getLanguageNames()[0]);
                 reply.setOntology("send-safe-area-recommendation");
-                myAgent.send(reply);
+
+                if (alarmIsRaised) {
+                    try {
+                        myAgent.getContentManager().fillContent(reply, safeArea);
+                    } catch (Codec.CodecException e) {
+                        e.printStackTrace();
+                    } catch (OntologyException e) {
+                        e.printStackTrace();
+                    }
+
+                    myAgent.send(reply);
+                }
             }
 
             else {

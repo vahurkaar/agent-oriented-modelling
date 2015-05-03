@@ -11,6 +11,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import ontology.AlarmOntology;
 import ontology.IncidentOntology;
+import ontology.LocationOntology;
 
 /**
  * Created by Vahur Kaar on 2.05.2015.
@@ -21,7 +22,9 @@ public class SecurityAssistantAgent extends Agent {
     private Codec codec = new SLCodec();
     //Initializing ontology classes
     private Ontology alarmOntology = AlarmOntology.getInstance();
-        private Ontology incidentOntology = IncidentOntology.getInstance();
+    private Ontology incidentOntology = IncidentOntology.getInstance();
+    private Ontology sendLocationOntology = LocationOntology.getSendLocationInstance();
+    private Ontology safeAreaLocationOntology = LocationOntology.getSafeAreaLocationInstance();
 
     @Override
     protected void setup() {
@@ -34,6 +37,8 @@ public class SecurityAssistantAgent extends Agent {
         getContentManager().registerLanguage(codec);
         getContentManager().registerOntology(alarmOntology);
         getContentManager().registerOntology(incidentOntology);
+        getContentManager().registerOntology(sendLocationOntology);
+        getContentManager().registerOntology(safeAreaLocationOntology);
         registerServices();
 
         addBehaviour(new SecurityAssistantMessageReceiver(this, 500));

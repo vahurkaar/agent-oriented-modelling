@@ -12,9 +12,8 @@ import jade.domain.FIPAException;
 
 import behaviours.*;
 import ontology.AlarmOntology;
-
-//PROGRAM ARGUMENTS
-//TODO
+import ontology.Location;
+import ontology.LocationOntology;
 
 
 @SuppressWarnings("serial")
@@ -23,8 +22,11 @@ public class PersonAgent extends Agent {
     //Initializing FIPA-SL (Semantic Language)
     private Codec codec = new SLCodec();
     //Initializing ontology class AlarmOntology
-    private Ontology ontology = AlarmOntology.getInstance();
+    private Ontology alarmOntology = AlarmOntology.getInstance();
+    private Ontology sendLocationOntology = LocationOntology.getSendLocationInstance();
+    private Ontology safeAreaLocationOntology = LocationOntology.getSafeAreaLocationInstance();
 
+    private Location location;
 
     private String action;
 
@@ -36,15 +38,24 @@ public class PersonAgent extends Agent {
 
         //registering ontology and codec language (FIPA-SL)
         getContentManager().registerLanguage(codec);
-        getContentManager().registerOntology(ontology);
+        getContentManager().registerOntology(alarmOntology);
+        getContentManager().registerOntology(sendLocationOntology);
+        getContentManager().registerOntology(safeAreaLocationOntology);
 
         registerServices();
 
         // Add alert behaviour to send an alert message to the seciruty provider agent
         if (args != null && args.length > 0){
             action = (String) args[0];
+            if (args.length == 3) {
+                location = new Location((String) args[1], (String) args[2]);
+            }
         } else {
             action = "ok";
+        }
+
+        if (location == null) {
+            location = new Location("II", "100");
         }
 
         if (action.equals("alarm")) {
@@ -83,4 +94,7 @@ public class PersonAgent extends Agent {
         System.out.println("PERSON-AGENT " + getAID().getLocalName() + " HAS BEEN TERMINATED!");
     }
 
+    public Location getLocation() {
+        return location;
+    }
 }
