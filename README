@@ -1,0 +1,4 @@
+Käivitamine
+
+Main klass: jade.Boot
+Parameetrid: -gui PERSON_1:agents.PersonAgent("ok");PERSON_2:agents.PersonAgent("alarm");SECURITY_ASSISTANT:agents.SecurityAssistantAgent();SECURITY_PROVIDER_1:agents.SecurityProviderAgent()
