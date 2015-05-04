@@ -76,6 +76,22 @@ public class PersonMessageReceiver extends TickerBehaviour {
                 System.out.println(myAgent.getLocalName() + ": RECEIVED NOTIFICATION OF SURPRESSED ALARM");
             }
 
+            else if (messageOntologyEquals(msg, "visitor-registered")) {
+                if (msg.getPerformative() == ACLMessage.AGREE) {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR WAS SUCCESSFULLY REGISTERED!");
+                } else {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR WAS NOT SUCCESSFULLY REGISTERED!");
+                }
+            }
+
+            else if (messageOntologyEquals(msg, "visitor-exit-registered")) {
+                if (msg.getPerformative() == ACLMessage.AGREE) {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR EXIT WAS SUCCESSFULLY REGISTERED!");
+                } else {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR EXIT WAS NOT SUCCESSFULLY REGISTERED!");
+                }
+            }
+
             else {
                 System.out.println(msg.getOntology());
                 System.out.println(myAgent.getLocalName()+": didn't understand the message!");

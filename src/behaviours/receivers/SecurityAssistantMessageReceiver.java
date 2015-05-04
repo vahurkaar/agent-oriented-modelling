@@ -15,10 +15,15 @@ import ontology.AlarmActivity;
 import ontology.Incident;
 import ontology.Location;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Vahur Kaar on 2.05.2015.
  */
 public class SecurityAssistantMessageReceiver extends TickerBehaviour {
+
+    private List<String> registeredVisitors = new ArrayList<String>();
 
     private boolean alarmIsRaised;
 
@@ -141,6 +146,48 @@ public class SecurityAssistantMessageReceiver extends TickerBehaviour {
                         e.printStackTrace();
                     }
 
+                    myAgent.send(reply);
+                }
+            }
+
+            else if (messageOntologyEquals(msg, "register-visitor")) {
+                String visitor = msg.getContent();
+
+                if (registeredVisitors.contains(visitor)) {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR HAS ALREADY BEEN REGISTERED - " + visitor);
+
+                    ACLMessage reply = new ACLMessage(ACLMessage.FAILURE);
+                    reply.addReceiver(new AID(myAgent.getName(), true));
+                    reply.setOntology("visitor-registered");
+                    myAgent.send(reply);
+                } else {
+                    registeredVisitors.add(visitor);
+                    System.out.println(myAgent.getLocalName() + ": VISITOR REGISTERED SUCCESSFULLY! - " + visitor);
+
+                    ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
+                    reply.addReceiver(new AID(myAgent.getName(), true));
+                    reply.setOntology("visitor-registered");
+                    myAgent.send(reply);
+                }
+            }
+
+            else if (messageOntologyEquals(msg, "register-visitor-exit")) {
+                String visitor = msg.getContent();
+
+                if (registeredVisitors.contains(visitor)) {
+                    registeredVisitors.remove(visitor);
+                    System.out.println(myAgent.getLocalName() + ": VISITOR EXITED - " + visitor);
+
+                    ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
+                    reply.addReceiver(new AID(myAgent.getName(), true));
+                    reply.setOntology("visitor-exit-registered");
+                    myAgent.send(reply);
+                } else {
+                    System.out.println(myAgent.getLocalName() + ": VISITOR HASN'T EVEN BEEN REGISTERED YET! - " + visitor);
+
+                    ACLMessage reply = new ACLMessage(ACLMessage.FAILURE);
+                    reply.addReceiver(new AID(myAgent.getName(), true));
+                    reply.setOntology("visitor-exit-registered");
                     myAgent.send(reply);
                 }
             }
